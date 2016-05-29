@@ -62,70 +62,73 @@ class ComunidadesService
 		        $resultado = $res->getBody();
 		        
 				$htmlComunidades = str_get_html($resultado);
-				$nombreComunidad = $htmlComunidades->find('div.comunidad')[0]->children(0)->innertext;
-				$comunidades = explode('<br/>', $htmlComunidades->find('div.comunidad')[0]->innertext);
-				
-
-				$resultComunidad = [];
-				$resultComunidad['nombre'] = $nombreComunidad;
-				foreach ($comunidades as $index => $comunidad) {
-					$comunidad.='<final>';
-					$key =  $this->returndata($comunidad,'<b>',': </b>');
-					$data =  $this->returndata($comunidad,'</b>','<final>');
+				$comunidades = $htmlComunidades->find('div.comunidad');
+				foreach ($comunidades as $comunidad) {
+					$nombreComunidad = $comunidad->children(0)->innertext;
+					$comunidades = explode('<br/>', $comunidad->innertext);
 					
-					switch ($key) {
-						case 'Grupo Etnico ':
-							$key = 'grupo_etnico';
-							$resultComunidad[$key] = $data;
-							break;
-						case 'Población Total':
-							$key = 'poblacion';
-							$resultComunidad[$key] = $data;
-							break;
-						case 'Numero de familias':
-							$key = 'num_familias';
-							$resultComunidad[$key] = $data;
-							break;
-						case 'Numero de escolares ':
-							$key = 'num_escolares';
-							$resultComunidad[$key] = $data;
-							break;
-						case '"Río ':
-							$key = 'rio';
-							$resultComunidad[$key] = $data;
-							break;
-						case 'Ubicación':
-							$key = 'ubicacion';
-							$resultComunidad[$key] = $data;
-							break;
-						case 'Coordenadas':
-							$key = 'coordenadas';
-							$resultComunidad  = array_merge($resultComunidad, $this->parse($data));
-							break;
-						case 'Escuela Primaria':
-							$key = 'esc_primaria';
-							$resultComunidad[$key] = $data;
-							break;
-						case 'Escuela Secundaria':
-							$key = 'esc_secundaria';
-							$resultComunidad[$key] = $data;
-							break;
-						case 'Escuela Bilingüe':
-							$key = 'esc_bilingue';
-							$resultComunidad[$key] = $data;
-							break;
-						case 'Puesto de salud':
-							$key = 'puesto_salud';
-							$resultComunidad[$key] = $data;
-							break;
-						case 'Productos en venta':
-							$key = 'puesto_venta';
-							$resultComunidad[$key] = $data;
-							break;
-					}
-				}
 
-				Debug::varDump($resultComunidad);
+					$resultComunidad = [];
+					$resultComunidad['nombre'] = $nombreComunidad;
+					foreach ($comunidades as $index => $comunidad) {
+						$comunidad.='<final>';
+						$key =  $this->returndata($comunidad,'<b>',': </b>');
+						$data =  $this->returndata($comunidad,'</b>','<final>');
+						
+						switch ($key) {
+							case 'Grupo Etnico ':
+								$key = 'grupo_etnico';
+								$resultComunidad[$key] = $data;
+								break;
+							case 'Población Total':
+								$key = 'poblacion';
+								$resultComunidad[$key] = $data;
+								break;
+							case 'Numero de familias':
+								$key = 'num_familias';
+								$resultComunidad[$key] = $data;
+								break;
+							case 'Numero de escolares ':
+								$key = 'num_escolares';
+								$resultComunidad[$key] = $data;
+								break;
+							case '"Río ':
+								$key = 'rio';
+								$resultComunidad[$key] = $data;
+								break;
+							case 'Ubicación':
+								$key = 'ubicacion';
+								$resultComunidad[$key] = $data;
+								break;
+							case 'Coordenadas':
+								$key = 'coordenadas';
+								$resultComunidad  = array_merge($resultComunidad, $this->parse($data));
+								break;
+							case 'Escuela Primaria':
+								$key = 'esc_primaria';
+								$resultComunidad[$key] = $data;
+								break;
+							case 'Escuela Secundaria':
+								$key = 'esc_secundaria';
+								$resultComunidad[$key] = $data;
+								break;
+							case 'Escuela Bilingüe':
+								$key = 'esc_bilingue';
+								$resultComunidad[$key] = $data;
+								break;
+							case 'Puesto de salud':
+								$key = 'puesto_salud';
+								$resultComunidad[$key] = $data;
+								break;
+							case 'Productos en venta':
+								$key = 'puesto_venta';
+								$resultComunidad[$key] = $data;
+								break;
+						}
+					}
+					Debug::varDump($resultComunidad);
+				}
+				
 		    },
 		    function (RequestException $e) {
 		        echo $e->getMessage() . "\n";
