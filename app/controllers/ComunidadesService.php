@@ -7,7 +7,7 @@ use GuzzleHttp\Cookie\CookieJar;
 
 class ComunidadesService
 {
-	public function returndata($str,$start,$end){
+	private function returndata($str,$start,$end){
       $pattern = sprintf(
           '/%s(.+?)%s/ims',
           preg_quote($start, '/'), preg_quote($end, '/')
@@ -20,21 +20,21 @@ class ComunidadesService
       return 'Vacio';
     }
 
-    function parse($coord)
+    private function parse($coord)
 	{
 	    $strings = explode(' ',$coord);
 	    $ret['latitud'] = $this->degree2decimal($strings[0]);
 	    $ret['longitud'] = $this->degree2decimal($strings[1]);
 	    return $ret;
 	}
-	function degree2decimal($deg_coord="")
+	private function degree2decimal($deg_coord="")
 	{
 		$dms = [];
 	    preg_match("/(.*)°(.*)'(.*)\"/", $deg_coord, $dms);
 	    return $dms[1]+((($dms[2]*60)+($dms[3]))/3600);
 	}
 
-	public function lista(){
+	public function saveComunidades(){
 		$client = new Client([
 		    // Base URI is used with relative requests
 		    'base_uri' => 'http://www.ibcperu.org/mapas/',
@@ -126,6 +126,14 @@ class ComunidadesService
 								break;
 						}
 					}
+					$initialHash = [];
+					preg_match_all("/\b\w/", $nombreComunidad, $initialHash);
+					Debug::varDump($initialHash);
+					echo $initials = implode('', $initialHash[0]);
+					$resultComunidad['hashtag'] = strtoupper('COMUNIDAD'.$initials);
+					if(empty(Comunidad::where('nombre',$nombreComunidad)->get())){
+						Comunidad::create($resultComunidad);	
+					}
 					Debug::varDump($resultComunidad);
 				}
 				
@@ -137,5 +145,15 @@ class ComunidadesService
 		);
 
 		$promise->wait();
+	}
+
+	public function totalComunidades(){
+		Header::allowAccess();
+		Response::json(Comunidad::select('id','nombre','latitud','longitud')->get());
+	}
+
+	public function getDetailComunidad($id){
+		Header::allowAccess();
+		Response::json(Comunidad::find($id));
 	}
 }
